@@ -1,0 +1,1 @@
+# ESPHome SX1262
