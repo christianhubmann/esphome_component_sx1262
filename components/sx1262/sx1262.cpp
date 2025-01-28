@@ -29,8 +29,10 @@ void SX1262Component::dump_config() {
   ESP_LOGCONFIG(TAG, "    Sync Word: 0x%02X", sync_word_);
   ESP_LOGCONFIG(TAG, "    TX Power: %d dBm", tx_power_);
   ESP_LOGCONFIG(TAG, "    Preamble Length: %d", preamble_length_);
+#ifdef USE_SENSOR
   LOG_SENSOR("  ", "RSSI", rssi_sensor_);
   LOG_SENSOR("  ", "SNR", snr_sensor_);
+#endif
 
   if (init_state_ != RADIOLIB_ERR_NONE) {
     ESP_LOGE(TAG, "Communication with SX1262 failed: %d", init_state_);
@@ -92,12 +94,14 @@ void SX1262Component::loop() {
           const float snr = radio_->getSNR();
           ESP_LOGV(TAG, "RSSI: %.0f dBm", rssi);
           ESP_LOGV(TAG, "SNR: %.0f dB", snr);
+#ifdef USE_SENSOR
           if (this->rssi_sensor_) {
             this->rssi_sensor_->publish_state(rssi);
           }
           if (this->snr_sensor_) {
             this->snr_sensor_->publish_state(snr);
           }
+#endif
           this->on_packet_receive_callback_.call(data);
         } else {
           ESP_LOGE(TAG, "Receive failed: %d", read_state);

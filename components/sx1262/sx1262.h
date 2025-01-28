@@ -6,7 +6,10 @@
 #include "esphome/core/log.h"
 #include "esphome/core/automation.h"
 #include "esphome/core/hal.h"
+#ifdef USE_SENSOR
 #include "esphome/components/sensor/sensor.h"
+#endif
+
 #include <RadioLib.h>
 #include <SPI.h>
 
@@ -43,8 +46,10 @@ class SX1262Component : public Component {
   void add_on_packet_receive_callback(std::function<void(const std::vector<uint8_t> &)> callback) {
     this->on_packet_receive_callback_.add(std::move(callback));
   }
+#ifdef USE_SENSOR
   void set_rssi_sensor(sensor::Sensor *sensor) { rssi_sensor_ = sensor; }
   void set_snr_sensor(sensor::Sensor *sensor) { snr_sensor_ = sensor; }
+#endif
   bool operation_done{false};
 
  protected:
@@ -68,8 +73,10 @@ class SX1262Component : public Component {
   int8_t tx_power_{10};
   uint16_t preamble_length_{8};
   CallbackManager<void(const std::vector<uint8_t> &)> on_packet_receive_callback_;
+#ifdef USE_SENSOR
   sensor::Sensor *rssi_sensor_{nullptr};
   sensor::Sensor *snr_sensor_{nullptr};
+#endif
   bool is_transmitting_;
   int16_t transmission_state_;
 };
