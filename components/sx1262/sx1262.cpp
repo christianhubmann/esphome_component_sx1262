@@ -74,7 +74,7 @@ void SX1262Component::loop() {
       is_transmitting_ = false;
 
       if (transmission_state_ == RADIOLIB_ERR_NONE) {
-        ESP_LOGI(TAG, "Send success");
+        ESP_LOGI(TAG, "Send OK");
       } else {
         ESP_LOGE(TAG, "Send failed: %d", transmission_state_);
       }
@@ -89,7 +89,7 @@ void SX1262Component::loop() {
         const int16_t read_state = radio_->readData(data.data(), len);
 
         if (read_state == RADIOLIB_ERR_NONE) {
-          ESP_LOGI(TAG, "Receive success, length %d", len);
+          ESP_LOGI(TAG, "Receive OK, length: %d", len);
           const float rssi = radio_->getRSSI();
           const float snr = radio_->getSNR();
           ESP_LOGV(TAG, "RSSI: %.0f dBm", rssi);
@@ -110,7 +110,11 @@ void SX1262Component::loop() {
         ESP_LOGE(TAG, "Invalid received packet length: %d", len);
       }
 
-      radio_->startReceive();
+      // A transmit might have started in the receive callback.
+      // In that case, do not start receiving to not abort the transmit.
+      if (!is_transmitting_) {
+        radio_->startReceive();
+      }
     }
   }
 }
