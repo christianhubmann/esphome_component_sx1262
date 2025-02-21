@@ -119,7 +119,7 @@ void SX1262Component::loop() {
   }
 }
 
-void SX1262Component::send_packet(const std::vector<uint8_t> &data) {
+void SX1262Component::send_packet(const std::vector<uint8_t> &data, const bool blocking) {
   if (init_state_ != RADIOLIB_ERR_NONE) {
     ESP_LOGE(TAG, "Not initialized: %d", init_state_);
     return;
@@ -131,7 +131,14 @@ void SX1262Component::send_packet(const std::vector<uint8_t> &data) {
 
   ESP_LOGV(TAG, "Sending packet, length %d", data.size());
   is_transmitting_ = true;
-  transmission_state_ = radio_->startTransmit(data.data(), data.size());
+
+  if (blocking) {
+    transmission_state_ = radio_->transmit(data.data(), data.size());
+    operation_done = true;
+    loop();
+  } else {
+    transmission_state_ = radio_->startTransmit(data.data(), data.size());
+  }
 }
 
 }  // namespace sx1262

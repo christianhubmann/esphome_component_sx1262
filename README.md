@@ -78,7 +78,8 @@ on_...:
 ````
 
 Configuration options:
-- **data (Required**, std::vector<uint8_t>, templatable): The payload of the packet to be send. 
+- **data (Required**, std::vector<uint8_t>, templatable): The payload of the packet to be send.
+- **blocking** (Optional): Whether send_packet should be a blocking call. Defaults to `False`.
 
 ## on_packet_received Trigger
 This automation triggers when a LoRa packet is received. The parameter `data` of type `std::vector<uint8_t>` contains the packet payload.

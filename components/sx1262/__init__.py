@@ -29,6 +29,7 @@ CONF_CODING_RATE = "coding_rate"
 CONF_SYNC_WORD = "sync_word"
 CONF_PREAMBLE_LENGTH = "preamble_length"
 CONF_ON_PACKET_RECEIVE = "on_packet_receive"
+CONF_BLOCKING = "blocking"
 
 sx1262_ns = cg.esphome_ns.namespace("sx1262")
 SX1262Component = sx1262_ns.class_(
@@ -145,7 +146,8 @@ async def to_code(config):
 SEND_PACKET_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.use_id(SX1262Component),
-        cv.Required(CONF_DATA): cv.templatable(cv.ensure_list(cv.hex_uint8_t))
+        cv.Required(CONF_DATA): cv.templatable(cv.ensure_list(cv.hex_uint8_t)),
+        cv.Optional(CONF_BLOCKING, default=False): cv.boolean,
     }
 )
 
@@ -162,5 +164,9 @@ async def send_packet_to_code(config, action_id, template_arg, args):
         templ = await cg.templatable(data, args, cg.std_vector.template(cg.uint8))
         cg.add(var.set_data_template(templ))
     else:
-        cg.add(var.set_data_simple(data))
+        cg.add(var.set_data_static(data))
+
+    if CONF_BLOCKING in config:
+        cg.add(var.set_blocking(config[CONF_BLOCKING]))
+
     return var

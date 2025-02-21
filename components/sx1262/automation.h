@@ -8,26 +8,31 @@ namespace sx1262 {
 template<typename... Ts> class SendPacketAction : public Action<Ts...>, public Parented<SX1262Component> {
  public:
   void set_data_template(std::function<std::vector<uint8_t>(Ts...)> func) {
-    this->data_template_ = func;
-    this->simple_ = false;
-  }
-  void set_data_simple(const std::vector<uint8_t> &data) {
-    this->data_simple_ = data;
-    this->simple_ = true;
+    this->data_func_ = func;
+    this->static_ = false;
   }
 
+  void set_data_static(const std::vector<uint8_t> &data) {
+    this->data_static_ = data;
+    this->static_ = true;
+  }
+
+  void set_blocking(const bool blocking) { this->blocking_ = blocking; }
+
   void play(Ts... x) override {
-    if (this->simple_) {
-      this->parent_->send_packet(this->data_simple_);
+    if (this->static_) {
+      this->parent_->send_packet(this->data_static_, this->blocking_);
     } else {
-      this->parent_->send_packet(this->data_template_(x...));
+      auto val = this->data_func_(x...);
+      this->parent_->send_packet(val, this->blocking_);
     }
   }
 
  protected:
-  bool simple_{true};
-  std::function<std::vector<uint8_t>(Ts...)> data_template_{};
-  std::vector<uint8_t> data_simple_{};
+  bool static_{false};
+  std::function<std::vector<uint8_t>(Ts...)> data_func_{};
+  std::vector<uint8_t> data_static_{};
+  bool blocking_{false};
 };
 
 class ReceivePacketTrigger : public Trigger<const std::vector<uint8_t> &> {

@@ -42,7 +42,7 @@ class SX1262Component : public Component {
   void set_sync_word(uint8_t sync_word) { this->sync_word_ = sync_word; }
   void set_tx_power(int8_t tx_power) { this->tx_power_ = tx_power; }
   void set_preamble_length(uint16_t preamble_length) { this->preamble_length_ = preamble_length; }
-  void send_packet(const std::vector<uint8_t> &data);
+  void send_packet(const std::vector<uint8_t> &data, const bool blocking = false);
   void add_on_packet_receive_callback(std::function<void(const std::vector<uint8_t> &)> callback) {
     this->on_packet_receive_callback_.add(std::move(callback));
   }
