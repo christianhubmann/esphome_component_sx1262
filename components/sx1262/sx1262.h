@@ -46,6 +46,7 @@ class SX1262Component : public Component {
   void add_on_packet_receive_callback(std::function<void(const std::vector<uint8_t> &)> callback) {
     this->on_packet_receive_callback_.add(std::move(callback));
   }
+  void sleep();
 #ifdef USE_SENSOR
   void set_rssi_sensor(sensor::Sensor *sensor) { rssi_sensor_ = sensor; }
   void set_snr_sensor(sensor::Sensor *sensor) { snr_sensor_ = sensor; }

@@ -35,6 +35,11 @@ template<typename... Ts> class SendPacketAction : public Action<Ts...>, public P
   bool blocking_{false};
 };
 
+template<typename... Ts> class SleepAction : public Action<Ts...>, public Parented<SX1262Component> {
+ public:
+  void play(Ts... x) override { this->parent_->sleep(); }
+};
+
 class ReceivePacketTrigger : public Trigger<const std::vector<uint8_t> &> {
  public:
   explicit ReceivePacketTrigger(SX1262Component *parent) {

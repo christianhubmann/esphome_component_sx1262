@@ -141,5 +141,10 @@ void SX1262Component::send_packet(const std::vector<uint8_t> &data, const bool b
   }
 }
 
+void SX1262Component::sleep() {
+  is_transmitting_ = false;
+  radio_->sleep();
+}
+
 }  // namespace sx1262
 }  // namespace esphome

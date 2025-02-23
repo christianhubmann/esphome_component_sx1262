@@ -81,6 +81,16 @@ Configuration options:
 - **data (Required**, std::vector<uint8_t>, templatable): The payload of the packet to be send.
 - **blocking** (Optional): Whether send_packet should be a blocking call. Defaults to `False`.
 
+## sleep Action
+Put the radio module to sleep.
+
+````
+on_...:
+  then:
+    - sx1262.sleep
+````
+
+
 ## on_packet_received Trigger
 This automation triggers when a LoRa packet is received. The parameter `data` of type `std::vector<uint8_t>` contains the packet payload.
 

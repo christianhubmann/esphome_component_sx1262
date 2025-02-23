@@ -38,10 +38,9 @@ SX1262Component = sx1262_ns.class_(
 vector_uint8_t = cg.std_vector.template(cg.uint8)
 vector_uint8_const_ref_t = vector_uint8_t.operator("ref").operator("const")
 
-# Send a packet.
 SendPacketAction = sx1262_ns.class_("SendPacketAction", automation.Action)
+SleepAction = sx1262_ns.class_("SleepAction", automation.Action)
 
-# Triggers when a packet is received.
 ReceivePacketTrigger = sx1262_ns.class_(
   "ReceivePacketTrigger",
   automation.Trigger.template(vector_uint8_const_ref_t)
@@ -143,11 +142,18 @@ async def to_code(config):
         trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], var)
         await automation.build_automation(trigger, [(vector_uint8_const_ref_t, "data")], conf)
 
+
 SEND_PACKET_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.use_id(SX1262Component),
         cv.Required(CONF_DATA): cv.templatable(cv.ensure_list(cv.hex_uint8_t)),
         cv.Optional(CONF_BLOCKING, default=False): cv.boolean,
+    }
+)
+
+SLEEP_SCHEMA = cv.Schema(
+    {
+        cv.GenerateID(): cv.use_id(SX1262Component)
     }
 )
 
@@ -169,4 +175,13 @@ async def send_packet_to_code(config, action_id, template_arg, args):
     if CONF_BLOCKING in config:
         cg.add(var.set_blocking(config[CONF_BLOCKING]))
 
+    return var
+
+
+@automation.register_action(
+    "sx1262.sleep", SleepAction, SLEEP_SCHEMA
+)
+async def sleep_to_code(config, action_id, template_arg, args):
+    var = cg.new_Pvariable(action_id, template_arg)
+    await cg.register_parented(var, config[CONF_ID])
     return var
