@@ -28,6 +28,8 @@ CONF_SPREADING_FACTOR = "spreading_factor"
 CONF_CODING_RATE = "coding_rate"
 CONF_SYNC_WORD = "sync_word"
 CONF_PREAMBLE_LENGTH = "preamble_length"
+CONF_TCXO_VOLTAGE = "tcxo_voltage"
+CONF_USE_REGULATOR_LDO = "use_regulator_ldo"
 CONF_ON_PACKET_RECEIVE = "on_packet_receive"
 CONF_BLOCKING = "blocking"
 
@@ -77,6 +79,8 @@ CONFIG_SCHEMA = (
             cv.Optional(CONF_SYNC_WORD, default=0x12): cv.hex_uint8_t,
             cv.Optional(CONF_TX_POWER, default=10): cv.int_,
             cv.Optional(CONF_PREAMBLE_LENGTH, default=8): cv.int_,
+            cv.Optional(CONF_TCXO_VOLTAGE, default=1.6): cv.float_,
+            cv.Optional(CONF_USE_REGULATOR_LDO, default=False): cv.boolean,
 
             # Automation
             cv.Optional(CONF_ON_PACKET_RECEIVE): automation.validate_automation(
@@ -137,6 +141,10 @@ async def to_code(config):
         cg.add(var.set_tx_power(config[CONF_TX_POWER]))
     if CONF_PREAMBLE_LENGTH in config:
         cg.add(var.set_preamble_length(config[CONF_PREAMBLE_LENGTH]))
+    if CONF_TCXO_VOLTAGE in config:
+        cg.add(var.set_tcxo_voltage(config[CONF_TCXO_VOLTAGE]))
+    if CONF_USE_REGULATOR_LDO in config:
+        cg.add(var.set_use_regulator_ldo(config[CONF_USE_REGULATOR_LDO]))
 
     for conf in config.get(CONF_ON_PACKET_RECEIVE, []):
         trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], var)

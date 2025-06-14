@@ -29,6 +29,8 @@ void SX1262Component::dump_config() {
   ESP_LOGCONFIG(TAG, "    Sync Word: 0x%02X", sync_word_);
   ESP_LOGCONFIG(TAG, "    TX Power: %d dBm", tx_power_);
   ESP_LOGCONFIG(TAG, "    Preamble Length: %d", preamble_length_);
+  ESP_LOGCONFIG(TAG, "    TCXO voltage: %.1f V", tcxo_voltage_);
+  ESP_LOGCONFIG(TAG, "    Regulator LDO: %s", TRUEFALSE(use_regulator_ldo_));
 #ifdef USE_SENSOR
   LOG_SENSOR("  ", "RSSI", rssi_sensor_);
   LOG_SENSOR("  ", "SNR", snr_sensor_);
@@ -50,8 +52,9 @@ void SX1262Component::setup() {
 
   radio_ = new SX1262(new Module(cs_pin_, irq_pin_, reset_pin_, busy_pin_));
 
-  init_state_ = radio_->begin(this->frequency_, this->bandwidth_, this->spreading_factor_, this->coding_rate_,
-                              this->sync_word_, this->tx_power_, this->preamble_length_);
+  init_state_ =
+      radio_->begin(this->frequency_, this->bandwidth_, this->spreading_factor_, this->coding_rate_, this->sync_word_,
+                    this->tx_power_, this->preamble_length_, this->tcxo_voltage_, this->use_regulator_ldo_);
 
   if (init_state_ == RADIOLIB_ERR_NONE) {
     ESP_LOGI(TAG, "Success.");

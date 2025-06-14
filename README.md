@@ -64,6 +64,8 @@ LoRa configuration:
 - **sync_word** (Optional): The sync word. Defaults to `0x12`.
 - **power** (Optional): The TX output power in dBm. Defaults to `10`.
 - **preamble_length** (Optional): The preamble length. Defaults to `8`.
+- **tcxo_voltage** (Optional): TCXO reference voltage in V. Defaults to `1.6`.
+- **use_regulator_ldo** (Optional): Whether to use only LDO regulator (`True`) or DC-DC regulator (`False`). Defaults to `False`.
 
 ## send_packet Action
 Send a LoRa packet. The maximum payload size depends on the LoRa configuration.
